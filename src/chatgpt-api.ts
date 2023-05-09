@@ -1,3 +1,4 @@
+import { Agent } from 'http'
 import Keyv from 'keyv'
 import pTimeout from 'p-timeout'
 import QuickLRU from 'quick-lru'
@@ -27,6 +28,7 @@ export class ChatGPTAPI {
   protected _maxModelTokens: number
   protected _maxResponseTokens: number
   protected _fetch: types.FetchFn
+  protected _httpsProxyAgent: Agent
 
   protected _getMessageById: types.GetMessageByIdFunction
   protected _upsertMessage: types.UpsertMessageFunction
@@ -61,7 +63,8 @@ export class ChatGPTAPI {
       maxResponseTokens = 1000,
       getMessageById,
       upsertMessage,
-      fetch = globalFetch
+      fetch = globalFetch,
+      httpsProxyAgent = null
     } = opts
 
     this._apiKey = apiKey
@@ -69,6 +72,7 @@ export class ChatGPTAPI {
     this._apiBaseUrl = apiBaseUrl
     this._debug = !!debug
     this._fetch = fetch
+    this._httpsProxyAgent = httpsProxyAgent
 
     this._completionParams = {
       model: CHATGPT_MODEL,
@@ -242,7 +246,8 @@ export class ChatGPTAPI {
                   console.warn('OpenAI stream SEE event unexpected error', err)
                   return reject(err)
                 }
-              }
+              },
+              agent: this._httpsProxyAgent
             },
             this._fetch
           ).catch(reject)
@@ -252,7 +257,8 @@ export class ChatGPTAPI {
               method: 'POST',
               headers,
               body: JSON.stringify(body),
-              signal: abortSignal
+              signal: abortSignal,
+              agent: this._httpsProxyAgent
             })
 
             if (!res.ok) {

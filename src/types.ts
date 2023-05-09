@@ -1,3 +1,4 @@
+import { Agent } from 'http'
 import Keyv from 'keyv'
 
 import { fetch } from './fetch'
@@ -34,6 +35,7 @@ export type ChatGPTAPIOptions = {
   upsertMessage?: UpsertMessageFunction
 
   fetch?: FetchFn
+  httpsProxyAgent?: Agent
 }
 
 export type SendMessageOptions = {

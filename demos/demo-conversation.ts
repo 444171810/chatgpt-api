@@ -1,4 +1,5 @@
 import dotenv from 'dotenv-safe'
+import { HttpsProxyAgent } from 'https-proxy-agent'
 import { oraPromise } from 'ora'
 
 import { ChatGPTAPI } from '../src'
@@ -13,9 +14,12 @@ dotenv.config()
  * ```
  */
 async function main() {
+  //use HttpsProxyAgent
+  const httpsProxyAgent = new HttpsProxyAgent(process.env.PROXY)
   const api = new ChatGPTAPI({
     apiKey: process.env.OPENAI_API_KEY,
-    debug: false
+    debug: false,
+    httpsProxyAgent
   })
 
   const prompt = 'Write a poem about cats.'
@@ -26,6 +30,11 @@ async function main() {
 
   console.log('\n' + res.text + '\n')
 
+  await new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(0)
+    }, 10000)
+  })
   const prompt2 = 'Can you make it cuter and shorter?'
 
   res = await oraPromise(
@@ -38,7 +47,12 @@ async function main() {
   )
   console.log('\n' + res.text + '\n')
 
-  const prompt3 = 'Now write it in French.'
+  await new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(0)
+    }, 10000)
+  })
+  const prompt3 = 'Now write it in Chinese.'
 
   res = await oraPromise(
     api.sendMessage(prompt3, {
@@ -50,6 +64,11 @@ async function main() {
   )
   console.log('\n' + res.text + '\n')
 
+  await new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(0)
+    }, 10000)
+  })
   const prompt4 = 'What were we talking about again?'
 
   res = await oraPromise(

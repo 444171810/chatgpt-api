@@ -1,4 +1,5 @@
 import dotenv from 'dotenv-safe'
+import { HttpsProxyAgent } from 'https-proxy-agent'
 
 import { ChatGPTAPI } from '../src'
 
@@ -12,7 +13,12 @@ dotenv.config()
  * ```
  */
 async function main() {
-  const api = new ChatGPTAPI({ apiKey: process.env.OPENAI_API_KEY })
+  //use HttpsProxyAgent
+  const httpsProxyAgent = new HttpsProxyAgent(process.env.PROXY)
+  const api = new ChatGPTAPI({
+    apiKey: process.env.OPENAI_API_KEY,
+    httpsProxyAgent
+  })
 
   const prompt =
     'Write a python version of bubble sort. Do not include example usage.'

@@ -1,5 +1,6 @@
 import KeyvRedis from '@keyv/redis'
 import dotenv from 'dotenv-safe'
+import { HttpsProxyAgent } from 'https-proxy-agent'
 import Keyv from 'keyv'
 import { oraPromise } from 'ora'
 
@@ -22,10 +23,13 @@ async function main() {
   let res: ChatMessage
 
   {
+    //use HttpsProxyAgent
+    const httpsProxyAgent = new HttpsProxyAgent(process.env.PROXY)
     // create an initial conversation in one client
     const api = new ChatGPTAPI({
       apiKey: process.env.OPENAI_API_KEY,
-      messageStore
+      messageStore,
+      httpsProxyAgent
     })
 
     const prompt = 'What are the top 5 anime of all time?'

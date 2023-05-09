@@ -1,4 +1,5 @@
 import dotenv from 'dotenv-safe'
+import { HttpsProxyAgent } from 'https-proxy-agent'
 import { oraPromise } from 'ora'
 
 import { ChatGPTAPI } from '../src'
@@ -13,9 +14,12 @@ dotenv.config()
  * ```
  */
 async function main() {
+  //use HttpsProxyAgent
+  const httpsProxyAgent = new HttpsProxyAgent(process.env.PROXY)
   const api = new ChatGPTAPI({
     apiKey: process.env.OPENAI_API_KEY,
-    debug: false
+    debug: false,
+    httpsProxyAgent
   })
 
   const prompt =
