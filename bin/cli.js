@@ -7,6 +7,7 @@ import Conf from 'conf'
 import { readPackageUp } from 'read-pkg-up'
 
 import { ChatGPTAPI } from '../build/index.js'
+import { HttpsProxyAgent } from 'https-proxy-agent'
 
 async function main() {
   const dirname = url.fileURLToPath(new URL('.', import.meta.url))
@@ -35,6 +36,7 @@ async function main() {
     .option('-m, --model <model>', 'Model (gpt-3.5-turbo, gpt-4)', {
       default: 'gpt-3.5-turbo'
     })
+    .option('-a, --agent [agent]', 'httpProxyAgent url', { default: process.env.AGENT })
     .option(
       '-n, --conversationName <conversationName>',
       'Unique name for the conversation'
@@ -71,6 +73,11 @@ async function main() {
         console.log('using config', config.path)
       }
 
+      let httpsProxyAgent = null;
+      if (options.agent) {
+        httpsProxyAgent = new HttpsProxyAgent(options.agent === true ? process.env.AGENT : options.agent)
+      }
+
       const api = new ChatGPTAPI({
         apiKey,
         apiOrg,
@@ -91,7 +98,8 @@ async function main() {
             conversation.lastMessageId = message.id
             config.set(conversationKey, conversation)
           }
-        }
+        },
+        httpsProxyAgent
       })
 
       const res = await api.sendMessage(prompt, {
@@ -100,10 +108,10 @@ async function main() {
         timeoutMs: options.timeout || undefined,
         onProgress: options.stream
           ? (progress) => {
-              if (progress.delta) {
-                process.stdout.write(progress.delta)
-              }
+            if (progress.delta) {
+              process.stdout.write(progress.delta)
             }
+          }
           : undefined
       })
 
