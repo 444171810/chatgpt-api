@@ -252,7 +252,7 @@ export class ChatGPTUnofficialProxyAPI {
       if (abortController) {
         // This will be called when a timeout occurs in order for us to forcibly
         // ensure that the underlying HTTP request is aborted.
-        ;(responseP as any).cancel = () => {
+        (responseP as any).cancel = () => {
           abortController.abort()
         }
       }
