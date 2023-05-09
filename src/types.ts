@@ -1,5 +1,7 @@
 import Keyv from 'keyv'
 
+import { fetch } from './fetch'
+
 export type Role = 'user' | 'assistant' | 'system'
 
 export type FetchFn = typeof fetch
